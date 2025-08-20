@@ -69,6 +69,34 @@ AND activity_ts < '2023-01-01'
 
 GROUP BY user_id;
 
+---
+
+# 📌 Practice Question — 04
+
+You are given two tables that store information about Instagram pages and the likes they have received.
+
+Write a query to find all Instagram pages that have not received any likes. Return the page IDs in ascending order.
+
+<img width="678" height="241" alt="image" src="https://github.com/user-attachments/assets/09e0f5d7-d2f0-4680-9fb0-e33fb0c1848a" />
+
+<img width="713" height="263" alt="image" src="https://github.com/user-attachments/assets/1cdc87e5-8d8f-4d91-b146-b530e28e43e1" />
+
+## 💡 Solution
+
+SELECT ip.insta_page_id
+
+FROM instagram_pages ip
+
+LEFT JOIN insta_likes il
+
+ON ip.insta_page_id = il.insta_page_id
+
+WHERE il.insta_page_id IS NULL
+
+ORDER BY ip.insta_page_id ASC;
+
+
+
 
 
 
