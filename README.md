@@ -1,5 +1,28 @@
 # SQL_practice_questions
-# 📌 SQL Practice Question — 01
+# 📌 Practice Question — 01
+
+Given a table of candidates and their skills, you're tasked with finding the candidates best suited for an open Data Analytics job. You want to find candidates who are proficient in Excel, PowerBI, SQL, and Python.
+Write a query to list the candidates who possess all of the required skills for the job. Sort the output by candidate_id in descending order.
+
+<img width="513" height="192" alt="image" src="https://github.com/user-attachments/assets/67bd0637-2708-4be1-ad4f-fc364463e5b1" />
+
+## 💡 Solution
+
+SELECT candidate_id
+
+FROM candidates
+
+WHERE skill IN ('Excel', 'PowerBI', 'SQL', 'Python')
+
+GROUP BY candidate_id
+
+HAVING COUNT(DISTINCT skill) = 4
+
+ORDER BY candidate_id DESC;
+
+---
+
+# 📌 Practice Question — 02
 
 Given a table of Twitter tweets, Write a query that calculates, for the year 2022, how many tweets each user posted, and then groups users by that tweet count. The result should display the tweet count as a bucket along with the number of users who fall into that bucket (i.e., a histogram of tweet frequency per user).
 
@@ -21,8 +44,9 @@ FROM total_tweets
 
 GROUP BY tweet_count_per_user;
 
+---
 
-# 📌 SQL Practice Question — 02
+# 📌 Practice Question — 03
 
 Assume you have a user_activity table that tracks events on an e-commerce website. Write a SQL query to calculate the Click-Through Rate (CTR) for product ads in 2022, grouped by user_id, and round the result to 2 decimal places.
 
