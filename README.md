@@ -95,6 +95,53 @@ WHERE il.insta_page_id IS NULL
 
 ORDER BY ip.insta_page_id ASC;
 
+---
+# 📌 Practice Question — 05
+
+You are given a table that stores information about users’ posts. For every user who has made at least two posts in the year 2021, write a query to calculate the number of days between their earliest post and latest post within that year.
+Return each user_id along with the calculated number of days.
+
+<img width="606" height="317" alt="image" src="https://github.com/user-attachments/assets/f47f76af-af83-4a50-ba4b-c2f1f7fb6905" />
+
+
+## 💡 Solution
+
+SELECT user_id, DATE_PART('day', MAX(post_date) - MIN(post_date)) AS days_between
+
+FROM posts
+
+WHERE EXTRACT(YEAR FROM post_date) = 2021
+
+GROUP BY user_id
+
+HAVING COUNT(*) >= 2;
+
+---
+# 📌 Practice Question — 06
+
+You are given a table that records messages exchanged on Microsoft Teams. Write a query to find the top 2 users who sent the most messages during August 2022.
+Return their sender_id along with the total number of messages they sent, ordered from the highest to lowest message count.
+
+<img width="592" height="367" alt="image" src="https://github.com/user-attachments/assets/2eee1a55-635f-4eeb-91da-2cb4d2d9d8c1" />
+
+## 💡 Solution
+
+SELECT sender_id, COUNT(*) AS message_count
+
+FROM messages
+
+WHERE EXTRACT(YEAR FROM sent_date) = 2022
+
+AND EXTRACT(MONTH FROM sent_date) = 8
+
+GROUP BY sender_id
+
+ORDER BY message_count DESC
+
+LIMIT 2;
+
+
+
 
 
 
