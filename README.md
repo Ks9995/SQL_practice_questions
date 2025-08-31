@@ -140,6 +140,32 @@ ORDER BY message_count DESC
 
 LIMIT 2;
 
+---
+
+# 📌 Practice Question — 07
+
+You are given a table that stores job postings from multiple companies on LinkedIn. Write a query to find the number of companies that have posted duplicate job listings.
+A duplicate job listing is defined as two or more job postings within the same company that have the same job title and description.
+
+<img width="562" height="321" alt="image" src="https://github.com/user-attachments/assets/ed96fd5e-f1d8-4db8-8290-6222bc20b05d" />
+
+## 💡 Solution
+
+SELECT COUNT(DISTINCT company_id) AS duplicate_companies
+
+FROM (SELECT company_id
+      
+FROM job_listings
+    
+GROUP BY company_id, title, description
+    
+HAVING COUNT(*) > 1
+
+) AS dup;
+
+
+
+
 
 
 
