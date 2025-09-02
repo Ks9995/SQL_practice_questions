@@ -232,6 +232,125 @@ ON E.manager_id = M.employee_id
 
 WHERE E.salary > M.salary;
 
+---
+# 📌 Practice Question — 11
+
+You are given a table that records all PayPal transactions, including deposits and withdrawals, for different accounts. Write a query to calculate the final balance of each account after applying all transactions.
+Assume that:
+All deposits increase the balance.
+All withdrawals decrease the balance.
+No transactions are missing from the log.
+
+<img width="877" height="637" alt="image" src="https://github.com/user-attachments/assets/912b4dc8-b9ae-478f-8d59-2c3f8708b4f5" />
+
+## 💡 Solution
+
+SELECT account_id,SUM(CASE WHEN transaction_type = 'Deposit' THEN amount
+
+WHEN transaction_type = 'Withdrawal' THEN -amount
+
+ELSE 0 END) AS final_balance
+
+FROM transactions
+
+GROUP BY account_id;
+
+---
+# 📌 Practice Question — 12
+
+A tech company wants to evaluate how actively their employees are using the company’s Db2 database system. Each query run by an employee is logged, and management would like to build a histogram that shows how many unique queries employees executed in Q3 of 2023 (July–September).
+The histogram should also include employees who did not run any queries in that timeframe.
+Write a SQL query to display:
+The number of distinct queries executed (as the histogram bucket).
+The count of employees who fall into each bucket.
+
+queries table:
+employee_id (integer) – Employee who ran the query.
+query_id (integer) – Unique identifier of the query.
+query_starttime (datetime) – Time the query started.
+execution_time (integer) – Duration of query execution in seconds.
+
+employees table:
+employee_id (integer) – Unique ID of each employee.
+full_name (string) – Employee’s name.
+gender (string) – Gender of the employee.
+
+<img width="878" height="578" alt="image" src="https://github.com/user-attachments/assets/b7ed3bef-9424-4981-bc38-40cdb4f772c0" />
+
+## 💡 Solution
+
+SELECT COALESCE(qry.unique_queries, 0) AS unique_queries, COUNT(*) AS employee_count
+
+FROM employees e
+
+LEFT JOIN (SELECT employee_id, COUNT(DISTINCT query_id) AS unique_queries
+    
+FROM queries
+
+WHERE query_starttime >= '2023-07-01'
+
+AND query_starttime < '2023-10-01'
+    
+GROUP BY employee_id) qry
+
+ON e.employee_id = qry.employee_id
+
+GROUP BY COALESCE(qry.unique_queries, 0)
+
+ORDER BY unique_queries;
+
+---
+# 📌 Practice Question — 13
+
+Scenario:
+Your analytics team is reviewing the performance of different credit card products by looking at how many cards were issued over time. The goal is to find out which cards show the largest swings in monthly issuance volumes.
+
+Task:
+Write a SQL query that returns each card’s name along with the difference between its highest and lowest number of issued cards across months. The result should be sorted so that cards with the largest differences appear first.
+
+<img width="886" height="641" alt="image" src="https://github.com/user-attachments/assets/368e3434-eac5-4dd1-9887-ea25eaa1391b" />
+
+## 💡 Solution
+
+SELECT card_name, MAX(issued_amount) - MIN(issued_amount) AS difference
+
+FROM monthly_cards_issued
+
+GROUP BY card_name
+
+ORDER BY difference DESC;
+
+---
+
+# 📌 Practice Question — 14
+
+An e-commerce analyst at Alibaba wants to calculate the average number of items included in each order. The available dataset summarizes how many items are in each order (item_count) and how many orders fall into each category (order_occurrences).
+Write a query to compute the mean items per order, rounded to one decimal place.
+
+<img width="892" height="523" alt="image" src="https://github.com/user-attachments/assets/8914d835-0496-4d29-a1ed-cc650f57aac2" />
+
+## 💡 Solution
+
+SELECT ROUND(CAST(SUM(item_count * order_occurrences) AS DECIMAL)/SUM(order_occurrences),
+
+1) AS mean
+
+FROM items_per_order;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
