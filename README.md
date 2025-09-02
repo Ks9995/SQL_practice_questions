@@ -57,6 +57,7 @@ Definition: CTR (%) = 100.0 * (Number of "ad_click" events) / (Number of "ad_vie
 <img width="611" height="283" alt="image" src="https://github.com/user-attachments/assets/7552c474-fba8-41c1-ae20-eadc823d2d75" />
 
 ## 💡 Solution
+
 SELECT user_id, ROUND(100.0 * SUM(CASE WHEN action_type = 'ad_click' THEN 1 ELSE 0 END)
 
 / NULLIF(SUM(CASE WHEN action_type = 'ad_view' THEN 1 ELSE 0 END), 0), 2) AS ctr_percentage
@@ -162,6 +163,77 @@ GROUP BY company_id, title, description
 HAVING COUNT(*) > 1
 
 ) AS dup;
+
+---
+
+# 📌 Practice Question — 08
+
+You are provided with two tables from a trading platform: one containing trade orders and another with user details. Write a query to find the top 3 cities where users have executed the highest number of completed trades. Return the city name along with the total number of completed orders, sorted in descending order by the count.
+
+<img width="908" height="692" alt="image" src="https://github.com/user-attachments/assets/de50ca73-de21-498d-b4b5-a0d031d17364" />
+
+<img width="923" height="575" alt="image" src="https://github.com/user-attachments/assets/9ed12b2a-e436-4188-9509-fcfb2508692e" />
+
+## 💡 Solution
+
+SELECT u.city, COUNT(*) AS total_completed_orders
+
+FROM trades t
+
+JOIN users u
+
+ON t.user_id = u.user_id
+
+WHERE t.status = 'Completed'
+
+GROUP BY u.city
+
+ORDER BY total_completed_orders DESC
+
+LIMIT 3;
+
+---
+
+# 📌 Practice Question — 09
+
+You have a table that stores product reviews. Write a query to calculate the average star rating for each product on a monthly basis.
+The results should include: the month of the review (as a number), the product ID, and the average rating rounded to two decimal places.
+Finally, sort the output by month and then by product ID.
+
+<img width="613" height="348" alt="image" src="https://github.com/user-attachments/assets/30aadca4-1b0e-4b16-af35-f8f61df0dfcd" />
+
+## 💡 Solution
+
+SELECT EXTRACT(MONTH FROM submit_date) AS mth, product_id,ROUND(AVG(stars), 2) AS avg_stars
+
+FROM reviews
+
+GROUP BY EXTRACT(MONTH FROM submit_date), product_id
+
+ORDER BY mth, product_id;
+
+---
+# 📌 Practice Question — 10
+
+In order to evaluate compensation fairness, HR wants to check if some employees are earning higher salaries than their direct managers.
+Write a query to find all such employees. Your output should include the employee’s ID and name.
+
+<img width="885" height="682" alt="image" src="https://github.com/user-attachments/assets/46515371-3abf-48af-8ef6-6f22525099a3" />
+
+## 💡 Solution
+
+SELECT E.employee_id, E.name
+
+FROM employee E
+
+JOIN employee M
+
+ON E.manager_id = M.employee_id
+
+WHERE E.salary > M.salary;
+
+
+
 
 
 
