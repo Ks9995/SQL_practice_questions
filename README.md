@@ -525,6 +525,48 @@ ON e.email_id = t.email_id
 
 AND t.signup_action = 'Confirmed';
 
+---
+# 📌 Practice Question — 22
+
+You have two tables containing Spotify streaming activity — one with historical listening data (songs_history) and one with data from the current week (songs_weekly).
+Write a query to return each user's song play count as of August 4, 2022, including both their past plays (from songs_history) and plays recorded during the current week (from songs_weekly).
+Your output should list:
+user_id
+song_id
+the total cumulative number of times that song has been played by that user up until August 4, 2022.
+The results should be sorted by the cumulative song play count in descending order
+
+🔑 Key Details:
+songs_history contains all plays that occurred before August 1, 2022.
+songs_weekly contains plays recorded between August 1 and August 7, 2022.
+Be sure to include users or songs that appear only in the weekly table (i.e., new users or new songs).
+Only consider data from the weekly table up to and including August 4, 2022.
+
+<img width="872" height="567" alt="image" src="https://github.com/user-attachments/assets/a9dd2a5f-fb20-45bc-81b1-9666f3703a4b" />
+
+<img width="853" height="557" alt="image" src="https://github.com/user-attachments/assets/9a3cc49b-a089-4304-b2d1-4ce5edc47140" />
+
+## 💡 Solution
+
+SELECT user_id, song_id, SUM(song_plays) AS song_count
+
+FROM (SELECT user_id, song_id, song_plays FROM songs_history
+
+UNION ALL
+
+SELECT user_id, song_id, COUNT(*) AS song_plays
+    
+FROM songs_weekly
+
+WHERE listen_time <= '2022-08-04 23:59:59'
+
+GROUP BY user_id, song_id) AS combined
+
+GROUP BY user_id, song_id
+
+ORDER BY song_count DESC;
+
+
 
 
 
