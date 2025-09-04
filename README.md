@@ -331,11 +331,219 @@ Write a query to compute the mean items per order, rounded to one decimal place.
 
 ## 💡 Solution
 
-SELECT ROUND(CAST(SUM(item_count * order_occurrences) AS DECIMAL)/SUM(order_occurrences),
-
-1) AS mean
+SELECT ROUND(CAST(SUM(item_count * order_occurrences) AS DECIMAL)/SUM(order_occurrences),1) AS mean
 
 FROM items_per_order;
+
+---
+# 📌 Practice Question — 15
+
+You are analyzing ride history data for an Uber-like platform. For each user, you need to find the third transaction they made, based on the order in which transactions occurred.
+Write a SQL query to return the following columns:user_id, spend (amount spent in that transaction), transaction_date.
+Only include the record corresponding to each user’s third transaction.
+
+<img width="822" height="570" alt="image" src="https://github.com/user-attachments/assets/3dff70ed-0880-455b-8195-8a8ef843160e" />
+
+## 💡 Solution
+
+SELECT user_id, spend, transaction_date
+
+FROM (SELECT user_id,spend,transaction_date,ROW_NUMBER() OVER (PARTITION BY user_id
+
+ORDER BY transaction_date) AS txn_rank
+
+FROM transactions) ranked
+
+WHERE txn_rank = 3;
+
+---
+# 📌 Practice Question — 16
+
+You are working with the HR analytics team at a software company. Management wants to review compensation trends and has asked you to find the second highest salary across all employees.
+If more than one employee shares that second highest salary, display the salary only once in the output.
+
+<img width="912" height="625" alt="image" src="https://github.com/user-attachments/assets/139661fc-f6e8-4a4a-b749-6949661b6a70" />
+
+## 💡 Solution
+
+SELECT DISTINCT salary AS second_highest_salary
+
+FROM (SELECT salary,DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+
+FROM employee) ranked_salaries
+
+WHERE rnk = 2;
+
+---
+# 📌 Practice Question — 17
+
+You’re working as a data analyst for a social media platform that wants to study user engagement trends over time.
+Your task is to compute a 3-day rolling average of tweets for each user.
+For every user, display: user_id, tweet_date, the 3-day rolling average of tweet counts (rounded to 2 decimal places)
+This will help visualize how active users are over time and smooth out day-to-day fluctuations in tweet volume.
+
+<img width="888" height="615" alt="image" src="https://github.com/user-attachments/assets/f36be4d2-0fc3-4fc5-90ca-fefce4a70da0" />
+
+## 💡 Solution
+
+SELECT user_id, tweet_date, ROUND(AVG(tweet_count) OVER (PARTITION BY user_id 
+
+ORDER BY tweet_date
+            
+ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2) AS rolling_avg_3d
+
+FROM tweets
+
+ORDER BY user_id, tweet_date;
+
+---
+# 📌 Practice Question — 18
+
+You are analyzing Snapchat user engagement data to understand how users spend their time on the platform. Each activity logged includes whether a user sent or opened a snap, along with the time spent on that activity.
+Write an SQL query that calculates, for each age group, the percentage of time spent on sending snaps and the percentage of time spent on opening snaps, relative to the total time spent on these two activities.
+Round both percentages to two decimal places and display them in separate columns (send_perc and open_perc). Exclude other activity types (like "chat") from your calculations.
+
+<img width="961" height="592" alt="image" src="https://github.com/user-attachments/assets/d65f0346-8148-426c-b796-2d49a627e431" />
+
+<img width="565" height="185" alt="image" src="https://github.com/user-attachments/assets/3ce69fda-d0fa-49ba-b279-fcca358ce882" />
+
+## 💡 Solution
+
+SELECT ab.age_bucket, ROUND(100.0 * SUM(CASE WHEN a.activity_type = 'send' THEN a.time_spent ELSE 0 END) /
+         
+NULLIF(SUM(CASE WHEN a.activity_type IN ('send','open') THEN a.time_spent ELSE 0 END), 0), 2) AS send_perc,
+
+ROUND(100.0 * SUM(CASE WHEN a.activity_type = 'open' THEN a.time_spent ELSE 0 END) /
+
+NULLIF(SUM(CASE WHEN a.activity_type IN ('send','open') THEN a.time_spent ELSE 0 END), 0), 2) AS open_perc
+
+FROM activities a
+
+JOIN age_breakdown ab
+
+ON a.user_id = ab.user_id
+
+WHERE a.activity_type IN ('send', 'open')
+
+GROUP BY ab.age_bucket
+
+ORDER BY ab.age_bucket;
+
+---
+# 📌 Practice Question — 19
+
+You're analyzing Amazon sales data and want to understand which products drive the most revenue within each product category.
+Write a SQL query to find the top two highest-earning products in every category for the year 2022. Your output should include:
+The category name
+The product name
+The total amount spent on that product (across all customers)
+Sort the results so that the highest-earning products appear first within each category.
+
+<img width="972" height="657" alt="image" src="https://github.com/user-attachments/assets/d4a58af3-6697-4dbd-ac36-5ac37d5c4981" />
+
+## 💡 Solution
+
+WITH product_totals AS (SELECT category,product,SUM(spend) AS total_spend
+
+FROM product_spend
+
+WHERE EXTRACT(YEAR FROM transaction_date) = 2022
+
+GROUP BY category, product),
+
+ranked_products AS (SELECT category,product,total_spend,
+        
+RANK() OVER (PARTITION BY category ORDER BY total_spend DESC) AS rnk
+
+FROM product_totals)
+
+SELECT category,product,total_spend
+
+FROM ranked_products
+
+WHERE rnk <= 2
+
+ORDER BY category, total_spend DESC;
+
+---
+# 📌 Practice Question — 20
+
+You're working on a salary analysis project to identify top talent within the company. Your manager asks you to prepare a report listing the top three highest-paid employees in each department based on their salaries.Write a SQL query that returns:
+Employee name
+Department name
+Salary
+
+Make sure to:Use a ranking window function to correctly handle duplicate salaries (multiple employees can share the same rank).
+Sort the final results by department name (A–Z), then by salary (highest first), and finally by employee name (alphabetically) when salaries are tied.
+
+<img width="826" height="571" alt="image" src="https://github.com/user-attachments/assets/b502a4f3-f2ef-4fbc-b01e-3ebb07fb8ece" />
+
+<img width="898" height="508" alt="image" src="https://github.com/user-attachments/assets/55d8cded-a526-4a32-8170-936aac175467" />
+
+<img width="651" height="237" alt="image" src="https://github.com/user-attachments/assets/d27b43ad-7018-49a3-9a75-c4428db22ee2" />
+
+## 💡 Solution
+
+WITH ranked_employees AS (SELECT e.name, d.department_name,e.salary,
+        
+DENSE_RANK() OVER (PARTITION BY e.department_id ORDER BY e.salary DESC) AS salary_rank
+    
+FROM employee e
+
+JOIN department d
+
+ON e.department_id = d.department_id)
+
+SELECT name, department_name,salary
+
+FROM ranked_employees
+
+WHERE salary_rank <= 3
+
+ORDER BY department_name ASC, salary DESC, name ASC;
+
+---
+# 📌 Practice Question — 21
+
+TikTok tracks new user sign-ups through their email addresses. After signing up, users receive one or more text messages prompting them to confirm their account activation. Some users may need multiple reminders before confirming, while others might never confirm at all.
+Your task as a data analyst is to calculate the activation rate for the set of users listed in the emails table. The activation rate represents the percentage of these users who successfully confirmed their accounts (at least once).
+Round the activation rate to two decimal places in the output.
+
+<img width="833" height="531" alt="image" src="https://github.com/user-attachments/assets/6e9afb09-9464-4436-8554-f85c07d44ecd" />
+
+<img width="783" height="513" alt="image" src="https://github.com/user-attachments/assets/07312041-a09c-42cb-8737-9fa56c045ebf" />
+
+## 💡 Solution
+
+SELECT ROUND(COUNT(t.email_id)::DECIMAL / COUNT(DISTINCT e.email_id),2) AS activation_rate
+
+FROM emails e
+
+LEFT JOIN texts t
+  
+ON e.email_id = t.email_id
+
+AND t.signup_action = 'Confirmed';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
